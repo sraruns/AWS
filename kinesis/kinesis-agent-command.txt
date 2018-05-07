@@ -1,0 +1,34 @@
+Modify the policy attached to the role of the ec2 instance running the agent.
+Add the following to the JSON statement section.
+        {
+            "Action": "firehose:*",
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+
+sudo yum install –y aws-kinesis-agent
+
+
+sudo vi /etc/aws-kinesis/agent.json
+
+{
+  "cloudwatch.emitMetrics": true,
+  "kinesis.endpoint": "kinesis.us-east-1.amazonaws.com",
+  "firehose.endpoint": "firehose.us-east-1.amazonaws.com",
+
+  "flows": [
+    {
+      "filePattern": "/home/ec2-user/kinesis-data-vis-sample-app-kcl.log",
+      "deliveryStream": "ArchivalStream"
+    }
+  ]
+}
+
+
+sudo chmod -R ugo+rwx /home/ec2-user/
+
+sudo chkconfig aws-kinesis-agent on
+
+sudo service aws-kinesis-agent start
+
+tail -f /var/log/aws-kinesis-agent/aws-kinesis-agent.log
